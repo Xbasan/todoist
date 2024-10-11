@@ -1,0 +1,22 @@
+.main {
+  width: 500px;
+  height: 700px;
+   
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.list{
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  color:red;
+}
+
+.text{
+  width: 40px;
+  height: 40px;
+}

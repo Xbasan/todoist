@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+main
+{% endblock %}
+
+
+{% block content %} 
+  <div class="main">
+  
+    {% for list in lists %}
+      <div class="list">
+        <form method="POST">
+          <input name="id" value={{ list["id"] }} style="display:none;">
+          <p> {{ counter }} </p>
+          <h3> {{ list["tirle"] }} </h3>
+          <span class="text"> {{ list["text"] }} </span>
+          <button type="submit" class=list_{{ list["id"] }}> X </button>
+        </form>
+      </div>
+    {% endfor %}
+    <form method="POST">
+      
+        <input name="title" id="input_title">
+        <input name="text" id="input_text">
+        
+        <button id="btn_add" type="submit"> Добавить </button>
+    </form>
+
+
+  </div>
+{% endblock %}
