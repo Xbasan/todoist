@@ -5,9 +5,6 @@ from flask import (
            jsonify
 )
 
-
-import os
-
 from db import (
            list_json,
            delete_list,
@@ -20,11 +17,13 @@ app = Flask(__name__)
 
 def save_list(list_json={
            "title": "",
-           "text": ""
+           "text": "",
+           "_date":""
 }):
            title = list_json["title"]
            text = list_json["text"]
-           inser_list(title=title, text=text)
+           date = list_json["_date"]
+           inser_list(title=title, text=text, date=date)
 
     
 def readings_list():
@@ -49,10 +48,12 @@ def index_post():
            else:
                       title = request.form.get("title")
                       text = request.form.get("text")
+                      date = request.form.get("date")
 
                       save_list(list_json={
                                             "title": title,
-                                            "text": text                      
+                                            "text": text,
+                                            "_date": date                      
                                 }
                       )
 
@@ -74,11 +75,13 @@ def api():
                       content = request.json
 
                       title = content["title"]
-                      text = content["text"] 
+                      text = content["text"]
+                      date = content["_date"]
                       
                       save_list(list_json={
                                            "title": title,
-                                           "text": text  
+                                           "text": text,
+                                           "_date": date 
                                 })
 
                       return jsonify({"status":"true"})

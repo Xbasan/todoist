@@ -1,13 +1,14 @@
 import sqlite3
 
 def main():
-    with sqlite3.connect("date/list.db") as db:
+    with sqlite3.connect("date/list_final.db") as db:
         cur = db.cursor()
 
         query = """CREATE TABLE list (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        text TEXT NOT NULL
+        text TEXT NOT NULL,
+        _date DATE NOT NULL
         );"""
 
         cur.execute(query)
@@ -16,7 +17,7 @@ def main():
 
 
 def select_list():
-    with sqlite3.connect("date/list.db") as db:
+    with sqlite3.connect("date/list_final.db") as db:
         cur = db.cursor()
 
         query = """SELECT * FROM list"""
@@ -28,13 +29,13 @@ def select_list():
 
     return select
 
-def inser_list(title, text):
-    with sqlite3.connect("date/list.db") as db:
+def inser_list(title, text, date):
+    with sqlite3.connect("date/list_final.db") as db:
         cur = db.cursor()
 
         query = f"""
-        INSERT INTO list (title, text)
-        VALUES ("{title}", "{text}")
+        INSERT INTO list (title, text, _date)
+        VALUES ("{title}", "{text}", "{date}")
         """
 
         cur.execute(query)
@@ -48,7 +49,8 @@ def list_json(db):
         facts = {
             "id": row[0],
             "title": row[1],
-            "text": row[2]
+            "text": row[2],
+            "date": row[3]
         } 
 
         req_json.append(facts)
@@ -56,7 +58,7 @@ def list_json(db):
     return req_json
 
 def delete_list(id):
-    with sqlite3.connect("date/list.db") as db:
+    with sqlite3.connect("date/list_final.db") as db:
         cur = db.cursor()
 
         query = """
@@ -70,6 +72,7 @@ def delete_list(id):
         
     
 if __name__ == "__main__":
-    # inser_list("Второй лист", "Второй текст")
-    for i in list_json(db=select_list()):
-        print(i)
+    # main()
+    inser_list("Второй лист", "Второй текст", "24-10-2014")
+    # for i in list_json(db=select_list()):
+    #     print(i)
