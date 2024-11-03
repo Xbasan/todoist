@@ -1,7 +1,7 @@
 import sqlite3
 
 def main():
-    with sqlite3.connect("date/list_final.db") as db:
+    with sqlite3.connect("list_final.db") as db:
         cur = db.cursor()
 
         query = """CREATE TABLE list (
@@ -17,7 +17,10 @@ def main():
         db.commit()
 
 
-def select_list():
+def select_list()->list:
+
+    """ Делает запрос в БД и возврашает масив кортежей"""
+    
     try:
         with sqlite3.connect("./list_final.db") as db:
             cur = db.cursor()
@@ -30,24 +33,39 @@ def select_list():
             db.commit()
     except Exception:
         return [(1,"Ошибка", Exception.__text_signature__, 0)]
-        print(Exception.__text_signature__)
-        
+
     return select
 
-def inser_list(title, text, date, time):
-    with sqlite3.connect("./list_final.db") as db:
-        cur = db.cursor()
+def inser_list(title, text, date, time)->bool:
+    """
+        Принемает данные для добавление новай записив,\n 
+        возврашает True при успешном запросе и False при не удачном,
+    """
+    try:
+        with sqlite3.connect("./list_final.db") as db:
+            cur = db.cursor()
+    
+            query = f"""
+            INSERT INTO list (title, text, _date, time)
+            VALUES ("{title}", "{text}", "{date}", "{time}")
+            """
 
-        query = f"""
-        INSERT INTO list (title, text, _date, time)
-        VALUES ("{title}", "{text}", "{date}", "{time}")
-        """
+            cur.execute(query)
 
-        cur.execute(query)
+            db.commit()
+        
+        return True
+    
+    except Exception:
+        return False
 
-        db.commit()
+def list_json(db:list)->set:
 
-def list_json(db):
+    """
+        Принемает кортеж масив кортежей,
+        длина кортежа 5 элиментов 
+    """
+    
     req_json = []
     
     for row in db:
@@ -78,7 +96,7 @@ def delete_list(id):
         
     
 if __name__ == "__main__":
-    # main()
-    inser_list("Второй лист", "Второй текст", "24-10-2014", " ")
+    main()
+    inser_list("Второй лист", "Второй текст", "24-10-2014", "9:19:am")
     # for i in list_json(db=select_list()):
     #     print(i)

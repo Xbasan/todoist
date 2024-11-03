@@ -1,4 +1,5 @@
 from kivy.uix.widget import Widget
+from kivy.metrics import sp
 
 from kivymd.uix.button import MDButton, MDButtonText
 from kivymd.uix.dialog import (
@@ -26,22 +27,17 @@ class Dialog(MDDialog):
             text = f""" { message } """
         )
 
-        dialog_container = MDDialogContentContainer(
-            MDDivider(),
-        )
-
         dialog_btn = MDDialogButtonContainer(
             Widget(),
             MDButton(
                 MDButtonText(text="OK"),
-                on_release=self.close_dialog,                
+                on_release=self.close_dialog,              
             ),
             spacing="8dp"
         )
 
         self.add_widget(dialog_icon)
-        self.add_widget(title_dialog)
-        self.add_widget(dialog_container)
+        self.add_widget(title_dialog) 
         self.add_widget(dialog_btn)
 
     def close_dialog(self, *args):
@@ -51,7 +47,7 @@ class Dialog(MDDialog):
 class Dialog_unfolded_sheet(MDDialog):
     def __init__(self, date={}, **kw):
         super().__init__(** kw)
-
+        
         self.__tiele = date["title"]
         self.__text = date["text"]
         self.__id = date["id"]
@@ -63,12 +59,18 @@ class Dialog_unfolded_sheet(MDDialog):
         )
 
         dialog_container = MDDialogContentContainer(
-            MDDialogSupportingText( text = f"Дата { str(self.__date) }, время { str(self.__time) }"),
-            MDDialogSupportingText( text = self.__text ),
+            MDDialogSupportingText( 
+                                    text = f"Дата { str(self.__date) }, время { str(self.__time) }",
+                                    theme_text_color = "Custom",
+                                    text_color="red",
+                                    # font_size = sp(3000)
+                            ),
+            MDDialogSupportingText( text = self.__text,),
             orientation="vertical",
         )
 
         btn = MDDialogButtonContainer(
+            Widget(),
             MDButton(
                 MDButtonText( text= "Выполнепо"),
                      on_release=self.drop

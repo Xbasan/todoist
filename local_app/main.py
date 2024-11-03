@@ -21,6 +21,7 @@ from kivymd.uix.list import (
 from kivymd.uix.textfield import (
     MDTextField,
     MDTextFieldHintText,
+    MDTextFieldHelperText,
     MDTextFieldMaxLengthText
 )
 from kivymd.uix.screenmanager import MDScreenManager
@@ -97,6 +98,8 @@ class ScrollView(MDScrollView):
         super().__init__(**kw)
         self.size_hint=(1, 1)
 
+        self.id = "Scroll_lists"
+        self.padding = "10dp"
         self.width = 100
         self.height = 100
         
@@ -121,7 +124,11 @@ class BaseScreen(MDScreen):
 
         self.update()
 
-    def update(self, instance=""):        
+    def update(self, instance=""):
+        try:
+            self.remove_element("Scroll_lists")
+        except Exception:
+            pass        
         self.add_widget(ScrollView())        
 
 
@@ -139,62 +146,87 @@ class CreateListScreen(MDScreen):
         self.input_title = MDTextField(
             MDTextFieldHintText( text="Enter title" ),
             MDTextFieldMaxLengthText( max_text_length=90 ),
-            pos_hint = { "center_x":.5, "center_y":.9 },
-        )
-
+            # pos_hint = { "center_x":.5, "center_y":.9 },
+        )        
+        
         self.input_text = MDTextField(
-            MDTextFieldHintText( text="Enter text" ),
+            MDTextFieldHelperText(text="Enter text"),
             MDTextFieldMaxLengthText( max_text_length=255 ),
-            pos_hint = { "center_x":.5, "center_y":.7 }
+            mode = "outlined",
+            multiline = True,
+            # pos_hint = { "center_x":.5, "center_y":.7 }
         )
+        
+        box_inpyt = MDBoxLayout()
+        box_inpyt.orientation = "vertical"
+        box_inpyt.pos_hint = {"center_x":.5, "center_y":1.15 }
+        box_inpyt.padding = "10dp"
+        box_inpyt.spacing = "50dp"
+        box_inpyt.add_widget(self.input_title)
+        box_inpyt.add_widget(self.input_text)
+        
 
         # Отвечает за выбор date
         
         self.date = MDButtonText(text="Выбранная дата\n" + str(datetime.datetime.now().strftime("%Y-%m-%d")))
-        self.btn_date=MDButton(
+        btn_date=MDButton(
             self.date,
             MDButtonIcon(icon="calendar-range"),
-            pos_hint={"center_x":.2, "center_y":.5},
             on_press=self._show_date_picker
         )
 
-        self.time_text = MDButtonText(text="fdjadgf")
+        self.time_text = MDButtonText(text=f"""Выбранная време\n { datetime.datetime.now().strftime("%I:%M %p")}""")
         btn_time = MDButton(
             self.time_text,
+            MDButtonIcon(icon="clock-time-seven-outline"),
             on_press=self._show_time_picker
         )
 
+        box_date_time = MDBoxLayout()
+        box_date_time.pos_hint = {"center_x":.5, "center_y":1}        
         
-
+        box_date_time.add_widget(btn_date)
+        box_date_time.add_widget(btn_time)
+        
         btn_creat_list = MDButton(
             MDButtonIcon(icon="pencil-circle"),
             pos_hint={"center_x":.9, "center_y":.4},
             on_press=self.creatу_btn
         )
+
+# Добавление элиментов на экран
         
-        self.add_widget(self.input_title)
-        self.add_widget(self.input_text)
-        self.add_widget(self.btn_date)
-        self.add_widget(btn_time)
+        self.add_widget(box_inpyt)
+        self.add_widget(box_date_time)
         self.add_widget(btn_creat_list)
 
     def creatу_btn(self, instance=""):
+        
+        """Вызывает методы необходимые для добавления новай записи в БД"""
+        
         title = self.input_title.text
         text = self.input_text.text
         date = self.date.text.split("\n")[1]
+        time = self.time_text.text
 
+        if text in "" and title in "":
+            message = """ Вы не нечего не вели """
+            Dialog(message=message).open()
+            return
+            
         self.input_title.text = ""
         self.input_text.text = ""
         self.date.text = "Выбранная дата\n" + str( datetime.datetime.now().strftime("%Y-%m-%d") )        
 
         try:
-            inser_list(title=title, text=text, date=date)            
+            inser_list(title=title, text=text, date=date, time=time)            
             message = """ Все по кайфу """
             icon = "check-underline"
             Dialog(message=message,icon=icon).open()
             
         except Exception:
             message =  """ Сори """
+            print(Exception.__text_signature__)
             Dialog(message=message).open()
 
 # функцые отвичаюшие за выбор даты
@@ -233,7 +265,12 @@ class CreateListScreen(MDScreen):
         time_picker_vertical.dismiss()
 
     def on_ok_time(self, time_picker_vertical: MDTimePickerDialVertical):
-        self.time_text.text = f"{ time_picker_vertical.hour }:{ time_picker_vertical.minute }:{time_picker_vertical.am_pm }"
+        
+        hour = str(time_picker_vertical.hour) if int(time_picker_vertical.hour) > 9 else "0"+str(time_picker_vertical.hour)
+        minute = str(time_picker_vertical.minute) if int(time_picker_vertical.minute) > 9 else "0"+str(time_picker_vertical.minute)  
+        ap_pm = str(time_picker_vertical.am_pm).upper() 
+        
+        self.time_text.text = f"Выбранная време\n { hour }:{ minute } { ap_pm }"
         time_picker_vertical.dismiss()
             
     def _show_time_picker(self, *args):
